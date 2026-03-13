@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIT Career Fair Placement - CS Undergrad Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#09090b',
+                        foreground: '#fafafa',
+                        card: '#09090b',
+                        'card-foreground': '#fafafa',
+                        muted: '#27272a',
+                        'muted-foreground': '#a1a1aa',
+                        border: '#27272a',
+                        input: '#27272a',
+                        iitblue: '#3b82f6',
+                        iitred: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #09090b; color: #fafafa; }
+        .line-clamp-2 {
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="font-sans text-foreground antialiased min-h-screen flex flex-col bg-background">
+
+    <!-- Header -->
+    <header class="bg-background/95 backdrop-blur border-b border-border sticky top-0 z-10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="bg-foreground text-background p-2.5 rounded-xl shadow-inner">
+                    <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground leading-tight">
+                        IIT Career Fair Placement
+                    </h1>
+                    <p class="text-sm text-muted-foreground font-medium">CS Undergrad Portal</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <i data-lucide="briefcase" class="w-4 h-4"></i>
+                <span>Interactive Guide</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        
+        <!-- Controls Section -->
+        <div class="bg-card p-4 sm:p-6 rounded-2xl border border-border shadow-sm mb-8 flex flex-col md:flex-row gap-4">
+            
+            <!-- Search -->
+            <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="h-5 w-5 text-muted-foreground"></i>
+                </div>
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="block w-full pl-10 pr-3 py-3 border border-input rounded-xl leading-5 bg-background placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:border-foreground transition-colors sm:text-sm text-foreground"
+                    placeholder="Search companies, tech stack, or roles..."
+                />
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="relative">
+                    <select
+                        id="tierFilter"
+                        class="block w-full sm:w-64 pl-4 pr-10 py-3 text-sm sm:text-base border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-foreground transition-colors appearance-none cursor-pointer"
+                    >
+                        <!-- Options populated by JS -->
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-3.5 h-5 w-5 text-muted-foreground pointer-events-none"></i>
+                </div>
+
+                <div class="relative">
+                    <select
+                        id="sizeFilter"
+                        class="block w-full sm:w-40 pl-4 pr-10 py-3 text-sm sm:text-base border border-input rounded-xl bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-foreground transition-colors appearance-none cursor-pointer"
+                    >
+                        <!-- Options populated by JS -->
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-3 top-3.5 h-5 w-5 text-muted-foreground pointer-events-none"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meta info -->
+        <div class="mb-6 flex items-center justify-between text-sm">
+            <p class="text-muted-foreground">
+                Showing <span id="resultCount" class="font-semibold text-foreground">0</span> companies
+            </p>
+        </div>
+
+        <!-- Grid -->
+        <div id="companyGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <!-- Cards populated by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20 bg-card rounded-2xl border border-border border-dashed">
+            <i data-lucide="filter" class="mx-auto h-10 w-10 text-muted-foreground mb-4"></i>
+            <h3 class="text-lg font-medium text-foreground mb-1">No companies found</h3>
+            <p class="text-muted-foreground">Try adjusting your search or filter criteria.</p>
+            <button id="clearFiltersBtn" class="mt-4 px-4 py-2 bg-foreground text-background rounded-lg font-medium hover:bg-neutral-200 transition-colors">
+                Clear all filters
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        const companiesData = [
+            // Tier 1
+            { name: "WSO2", industry: "IT / Enterprise Middleware", positions: "Software Engineering, DevOps/SRE, QA", techStack: "Java, C++, Ballerina, React, Kubernetes", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "Sysco LABS", industry: "IT / Foodservice Tech", positions: "Software Engineering, QA, DevOps", techStack: "Java, Spring Boot, React, AWS", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "99x", industry: "IT / Software Engineering", positions: "Software Engineering, QA, Cloud/DevOps", techStack: ".NET Core, React, Node.js, AWS/Azure", tier: "Tier 1: Top Tech & Product", size: "Medium" },
+            { name: "PickMe", industry: "Technology / Ride-hailing", positions: "Software Engineering, Data Science, QA", techStack: "Go, Java, React, Node.js, Microservices", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "Creative Software", industry: "IT / Software Development", positions: "Software Engineering, QA, UI/UX", techStack: ".NET, Java, Vue.js, React, Node.js, AWS", tier: "Tier 1: Top Tech & Product", size: "Medium" },
+            { name: "CODEGEN", industry: "IT / Travel Tech & Software", positions: "Software Engineering, QA, AI/ML", techStack: "Java, Spring Boot, Angular, Node.js, AI/ML", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "Thomson Reuters", industry: "Media / Info Services & IT", positions: "Software Engineering, Data Analyst", techStack: "Java, Python, Angular, React, AWS", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "AXIATA DIGITAL LABS", industry: "IT / Telco Software", positions: "Software Engineering, Data Science", techStack: "Java, Python, React, Kubernetes, AWS", tier: "Tier 1: Top Tech & Product", size: "Large" },
+            { name: "GTN", industry: "IT / FinTech & Trading", positions: "Software Engineering (Low Latency)", techStack: "C++, Java, .NET, React", tier: "Tier 1: Top Tech & Product", size: "Medium" },
+            
+            // Tier 2
+            { name: "OCTAVE", industry: "Data Analytics (John Keells)", positions: "Data Science, ML Engineering", techStack: "Python, PySpark, Databricks, Azure", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "arimac", industry: "IT / Digital Agency & Gaming", positions: "Game Dev, Software Eng, 3D Art", techStack: "React, Node.js, Unity (C#), Python", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "ZONE24x7", industry: "IT / Retail Tech", positions: "Software Engineering, Data Science", techStack: "Java, Python, React, C++, Node.js", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "Entgra", industry: "IT / IoT & Device Management", positions: "IoT Engineering, Software Eng", techStack: "Java, Android/iOS native, React, C++", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "BoardPAC", industry: "IT / Enterprise Software", positions: "Software Eng, Mobile Dev", techStack: ".NET, iOS (Swift), Android (Kotlin)", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "IronOne", industry: "IT / Enterprise Software", positions: "Software Engineering, AI / Python", techStack: ".NET, Python, Angular, iOS/Android", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "mitra", industry: "IT / Software Development", positions: "Software Eng, Cloud Architecture", techStack: "WSO2 Stack, AWS, Java, React, Node.js", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "MILLENNIUM IT ESP", industry: "IT / Enterprise Solutions", positions: "Software/Network Engineering", techStack: "Java, Oracle, C++, Python, .NET, AWS", tier: "Tier 2: Specialized & High-Growth", size: "Large" },
+            { name: "hSenidMobile", industry: "IT / Telco Software", positions: "Software Engineering, QA", techStack: "Java, Spring, React, Python", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+            { name: "PetDesk", industry: "IT / Pet Care Software", positions: "Software Engineering, QA", techStack: ".NET, C#, React, AWS", tier: "Tier 2: Specialized & High-Growth", size: "Medium" },
+
+            // Tier 3
+            { name: "epic", industry: "IT / FinTech", positions: "Software Engineering, Info Sec", techStack: "Java, Spring Boot, Angular, React, .NET", tier: "Tier 3: Solid Enterprise IT", size: "Large" },
+            { name: "Deloitte", industry: "Consulting & Tech Services", positions: "Tech Consulting, Data Analytics", techStack: "SAP, Oracle, Azure, AWS, .NET", tier: "Tier 3: Solid Enterprise IT", size: "Large" },
+            { name: "FORTUDE", industry: "IT / Enterprise Solutions", positions: "ERP Consulting, Software Eng", techStack: "Infor M3, Java, .NET, SQL", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+            { name: "Yenlo", industry: "IT / Integration Services", positions: "Integration Eng, Software Eng", techStack: "Java, WSO2 Stack, Ballerina", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+            { name: "vitalhub", industry: "IT / Healthcare Software", positions: "Software Engineering, QA", techStack: ".NET, C#, Angular, SQL Server", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+            { name: "BISTEC GLOBAL", industry: "IT Services & Consulting", positions: "Software Engineering, Tech Support", techStack: ".NET (C#), React.js, Angular, Azure", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+            { name: "INFORMATICS", industry: "IT / Education", positions: "Software Engineering, QA", techStack: "Java, .NET, Oracle, React", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+            { name: "INOVA", industry: "IT / Software Development", positions: "Software Engineering, QA", techStack: "Java, Spring Boot, Angular, .NET", tier: "Tier 3: Solid Enterprise IT", size: "Medium" },
+
+            // Tier 4
+            { name: "eight25", industry: "IT / Web & App Development", positions: "Web Development, UI/UX Design", techStack: "PHP, React, Node.js", tier: "Tier 4: Mid/Small Software Houses", size: "Medium" },
+            { name: "SoftSera", industry: "IT / Software Development", positions: "Software Engineering, QA", techStack: "React, Node.js, PHP", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "EVOLZA", industry: "IT / Software Development", positions: "Software Engineering, QA", techStack: "Angular, Java, .NET", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "WorkHub24", industry: "IT / Workflow Automation", positions: "Software Engineering, QA", techStack: ".NET, Angular, Azure", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "altrium", industry: "IT / Software Services", positions: "Software Engineering, QA", techStack: ".NET, Angular, React", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "avtra", industry: "IT / Aviation Software", positions: "Software Engineering, QA", techStack: "Java, Spring, React, Angular", tier: "Tier 4: Mid/Small Software Houses", size: "Medium" },
+            { name: "TilliT", industry: "IT / Manufacturing Software", positions: "Software Engineering, IoT Eng", techStack: "React, Node.js, Python, AWS", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "COULLAX", industry: "IT / Software Solutions", positions: "Software Engineering, QA", techStack: "React, Node.js, Flutter", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "Limark", industry: "IT / Software Development", positions: "Software Engineering, QA", techStack: "PHP, React, Node.js", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "echonlabs", industry: "IT / Software Development", positions: "Software Engineering, QA", techStack: "React, Node.js, PHP", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "forestpin", industry: "IT / Data Analytics", positions: "Data Analytics, Software Eng", techStack: "Python, React, Java, SQL", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "docupath.", industry: "IT / Healthcare Tech", positions: "Software Engineering, QA", techStack: "Python, React, Node.js", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "QrioMatrix", industry: "IT / Software Solutions", positions: "Software Engineering, QA", techStack: "-", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "NEXT TECHNOLOGY", industry: "IT / Technology Services", positions: "Software Engineering, QA", techStack: "-", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+            { name: "MW", industry: "IT / Technology Services", positions: "Software Engineering, QA", techStack: "-", tier: "Tier 4: Mid/Small Software Houses", size: "Small" },
+
+            // Tier 5 & 6
+            { name: "SLTMOBITEL", industry: "Telecommunications", positions: "Network Eng, Cybersecurity", techStack: "Java, Oracle, PHP, Python", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "HUTCH", industry: "Telecommunications", positions: "Network Engineering, Telecom IT", techStack: "Java, Oracle, PHP", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "CAL", industry: "Financial Services", positions: "Data Analytics, Financial IT", techStack: "Python, PowerBI, .NET", tier: "Tier 5: Non-Tech Core / IT Support", size: "Medium" },
+            { name: "ACUITY ANALYTICS", industry: "Financial Services", positions: "Data Analyst, BI Intern", techStack: "Python, R, PowerBI, SQL", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "sunshine", industry: "Conglomerate / Healthcare", positions: "BA, IT Support", techStack: "SAP ERP, Microsoft Dynamics", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "DSI", industry: "Manufacturing/Conglomerate", positions: "IT Support", techStack: "SAP, Microsoft stack", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "IWMI", industry: "Non-profit / Research", positions: "Data Analyst, GIS Intern", techStack: "Python, R, GIS", tier: "Tier 5: Non-Tech Core / IT Support", size: "Large" },
+            { name: "curve up", industry: "EdTech / Education", positions: "Project Management, Content", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Small" },
+            { name: "jobenvoy.com", industry: "Recruitment / HR Tech", positions: "HR, Recruitment", techStack: "PHP, React, MySQL", tier: "Tier 6: Non-CS Focused", size: "Small" },
+            { name: "LeapGen", industry: "HR Tech & Consulting", positions: "HR, Talent Acquisition", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Medium" },
+            { name: "InTalent Asia", industry: "Recruitment / HR", positions: "HR, Recruitment", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Small" },
+            { name: "CKS", industry: "Consulting / Business", positions: "Business Consulting, BA", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Small" },
+            { name: "Vitawell", industry: "Healthcare Retail", positions: "Retail Management, Marketing", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Medium" },
+            { name: "HI CONNECT", industry: "Business Solutions", positions: "Business Administration", techStack: "-", tier: "Tier 6: Non-CS Focused", size: "Small" }
+        ];
+
+        // State
+        let state = {
+            search: '',
+            tier: 'All',
+            size: 'All'
+        };
+
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const tierFilter = document.getElementById('tierFilter');
+        const sizeFilter = document.getElementById('sizeFilter');
+        const companyGrid = document.getElementById('companyGrid');
+        const resultCount = document.getElementById('resultCount');
+        const emptyState = document.getElementById('emptyState');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+        // Initialize App
+        function init() {
+            populateFilters();
+            addEventListeners();
+            render();
+            // Initialize Lucide icons for static content
+            lucide.createIcons();
+        }
+
+        function populateFilters() {
+            // Tiers
+            const tiers = ['All', ...new Set(companiesData.map(c => c.tier))];
+            tierFilter.innerHTML = tiers.map(tier => 
+                `<option value="${tier}">${tier === 'All' ? 'All Ranking Tiers' : tier}</option>`
+            ).join('');
+
+            // Sizes
+            const sizes = ['All', 'Small', 'Medium', 'Large'];
+            sizeFilter.innerHTML = sizes.map(size => 
+                `<option value="${size}">${size === 'All' ? 'Any Size' : size + ' Size'}</option>`
+            ).join('');
+        }
+
+        function addEventListeners() {
+            searchInput.addEventListener('input', (e) => {
+                state.search = e.target.value;
+                render();
+            });
+
+            tierFilter.addEventListener('change', (e) => {
+                state.tier = e.target.value;
+                render();
+            });
+
+            sizeFilter.addEventListener('change', (e) => {
+                state.size = e.target.value;
+                render();
+            });
+
+            clearFiltersBtn.addEventListener('click', () => {
+                state.search = '';
+                state.tier = 'All';
+                state.size = 'All';
+                searchInput.value = '';
+                tierFilter.value = 'All';
+                sizeFilter.value = 'All';
+                render();
+            });
+        }
+
+        function getTierStyle(tier) {
+            if (tier.includes('Tier 1')) return 'bg-blue-900/40 text-blue-300 border-blue-800';
+            if (tier.includes('Tier 2')) return 'bg-emerald-900/40 text-emerald-300 border-emerald-800';
+            if (tier.includes('Tier 3')) return 'bg-purple-900/40 text-purple-300 border-purple-800';
+            if (tier.includes('Tier 4')) return 'bg-amber-900/40 text-amber-300 border-amber-800';
+            return 'bg-muted text-muted-foreground border-border';
+        }
+
+        function render() {
+            // Filter Data
+            const filteredData = companiesData.filter(company => {
+                const searchLower = state.search.toLowerCase();
+                const matchesSearch = 
+                    company.name.toLowerCase().includes(searchLower) ||
+                    company.techStack.toLowerCase().includes(searchLower) ||
+                    company.positions.toLowerCase().includes(searchLower) ||
+                    company.industry.toLowerCase().includes(searchLower);
+                
+                const matchesTier = state.tier === 'All' || company.tier === state.tier;
+                const matchesSize = state.size === 'All' || company.size === state.size;
+
+                return matchesSearch && matchesTier && matchesSize;
+            });
+
+            // Update UI
+            resultCount.textContent = filteredData.length;
+
+            if (filteredData.length === 0) {
+                companyGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                companyGrid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                
+                companyGrid.innerHTML = filteredData.map(company => `
+                    <div class="bg-card rounded-2xl border border-border hover:border-muted-foreground/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col group cursor-default">
+                        <!-- Card Header -->
+                        <div class="p-6 pb-4 border-b border-border flex-1">
+                            <div class="flex justify-between items-start mb-4 gap-2">
+                                <h2 class="text-xl font-bold text-foreground group-hover:text-neutral-300 transition-colors">
+                                    ${company.name}
+                                </h2>
+                                <span class="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full border whitespace-nowrap ${getTierStyle(company.tier)}">
+                                    ${company.tier.split(':')[0]}
+                                </span>
+                            </div>
+                            
+                            <div class="flex items-center text-sm text-muted-foreground mb-2">
+                                <i data-lucide="building-2" class="w-4 h-4 mr-2 flex-shrink-0"></i>
+                                <span class="truncate" title="${company.industry}">${company.industry}</span>
+                                <span class="mx-2 text-border">•</span>
+                                <span>${company.size}</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-6 pt-4 bg-muted/30 flex-col gap-4 flex h-[160px]">
+                            <div>
+                                <div class="flex items-center text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                                    <i data-lucide="briefcase" class="w-3.5 h-3.5 mr-1.5"></i> Predicted Roles
+                                </div>
+                                <p class="text-sm text-foreground/90 leading-snug font-medium line-clamp-2" title="${company.positions}">
+                                    ${company.positions}
+                                </p>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                                    <i data-lucide="code" class="w-3.5 h-3.5 mr-1.5"></i> Tech Stack
+                                </div>
+                                <p class="text-sm text-foreground/80 leading-snug line-clamp-2 font-mono bg-background border border-border px-2 py-1 rounded shadow-sm" title="${company.techStack}">
+                                    ${company.techStack}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Re-initialize icons for newly added DOM elements
+                lucide.createIcons();
+            }
+        }
+
+        // Run
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>

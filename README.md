@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IIT Career Fair AI 🚀
 
-## Getting Started
+An AI-powered assistant designed for students attending the IIT Career Fair. This platform helps students navigate the fair efficiently by matching their skills with suitable companies and providing tailored interview preparation.
 
-First, run the development server:
+![IIT Career Fair AI](public/og-image.png) *(Note: Add a screenshot of your app here if available)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **🤖 AI Matchmaker**: Enter your skills and interests to receive 3 personalized company recommendations. The AI analyzes company tech stacks and roles to find your best fit.
+- **📝 AI Interview Prep**: Click on any company to generate realistic technical and behavioral interview questions tailored specifically to that company's stack and industry.
+- **🔍 Smart Company Directory**: Browse a curated list of 30+ companies attending the fair, categorized by tiers (Tier 1: Product, Tier 2: High Growth, etc.).
+- **⚡ Real-time Filtering**: Instantly search and filter companies by name, industry, tech stack, size, or tier.
+- **🎨 Premium UI**: A modern, responsive dark-themed interface built for a seamless user experience.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: [Next.js 14+](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **AI Engine**: [Groq SDK](https://groq.com/) (Llama-3.3-70b-versatile)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 18.x or later
+- A Groq API Key (Get one at [console.groq.com](https://console.groq.com/))
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/OshadhaVimuB/IIT-Career-Fair-AI.git
+   cd iit-career-fair
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory and add your Groq API key:
+   ```bash
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+Built with ❤️ for the IIT Career Fair.

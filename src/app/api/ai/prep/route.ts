@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { callGroq } from "@/lib/groq";
+import { callClaude } from "@/lib/claude";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,21 +9,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Company data is required" }, { status: 400 });
     }
 
-    const systemPrompt = `You are an expert technical recruiter and interviewer. Generate realistic interview questions. Return ONLY clean HTML fragments. Use standard HTML tags like <div>, <h4>, <ul>, <li>, <strong>. Style classes are not needed. Keep the tone encouraging.`;
+    const systemPrompt = `You are a Senior Technical Recruiter who specializes in university relations and internship hiring. You generate high-quality, practical interview preparation materials specifically for undergraduate interns. Your goal is to provide insightful, accurate, and actionable advice that helps students stand out in a competitive internship market. Return ONLY clean HTML fragments. Use standard HTML tags like <div>, <h4>, <ul>, <li>, <strong>. Style classes are not needed. Keep the tone professional yet encouraging.`;
     
-    const userPrompt = `I am a CS undergrad attending a career fair. I want to visit the booth for ${company.name}. 
+    const userPrompt = `I am a CS undergraduate looking for a technical internship. I am visiting the booth for ${company.name}. 
     Industry: ${company.industry}. 
     They are hiring for: ${company.positions}. 
     Their tech stack is: ${company.techStack}.
     
     Please provide:
-    1. Two technical questions I might be asked based on this stack/role.
-    2. One behavioral question relevant to their industry.
-    3. A one-sentence tip on how to impress them at the booth.
+    1. Two technical interview questions specifically tailored for an INTERN role (focus on fundamentals and potential) based on their tech stack.
+    2. One behavioral question that helps demonstrate my passion and ability to learn quickly in a professional environment.
+    3. A strategic "Pro Tip" for an intern candidate to impress them at the booth (e.g., mention a specific project or show curiosity about their code culture).
     
     Format using clean HTML layout. Return as a JSON object with a key 'html'.`;
 
-    const responseText = await callGroq(systemPrompt, userPrompt);
+    const responseText = await callClaude(systemPrompt, userPrompt);
     let { html } = JSON.parse(responseText);
 
     // Inject custom tailwind classes for the injected HTML to match dark mode (Server side)

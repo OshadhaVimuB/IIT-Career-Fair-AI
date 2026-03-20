@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { callGroq } from "@/lib/groq";
+import { callClaude } from "@/lib/claude";
 import { companiesData } from "@/data/companies";
 
 export async function POST(req: NextRequest) {
@@ -18,13 +18,13 @@ export async function POST(req: NextRequest) {
       tier: c.tier
     }));
 
-    const systemPrompt = "You are an expert career counselor at a university computer science career fair. Your goal is to match the student's skills/interests with the perfect companies attending the fair.";
-    const userPrompt = `I am a CS student. My skills/interests are: "${skills}". 
-    Here is the list of companies attending: ${JSON.stringify(catalog)}. 
-    Recommend exactly 3 companies I should visit. Keep the reasoning brief (1 sentence) highlighting the specific overlap.
+    const systemPrompt = "You are an elite university career coach specializing in placing Computer Science students into high-impact internships. Your goal is to provide sophisticated, strategic matches that consider technical growth, mentorship culture, and career trajectory. Focus specifically on internship opportunities.";
+    const userPrompt = `I am a CS student seeking a summer internship. My skills and interests are: "${skills}". 
+    Here is the list of companies attending the career fair: ${JSON.stringify(catalog)}. 
+    Recommend exactly 3 companies where I have the highest potential for a successful internship match. Keep the reasoning professional, technical, and highlight exactly why this internship would be a great fit for my specific skill set.
     Return the response as a JSON object with a key 'recommendations' which is an array of objects containing 'companyName' and 'reason'.`;
 
-    const responseText = await callGroq(systemPrompt, userPrompt);
+    const responseText = await callClaude(systemPrompt, userPrompt);
     const result = JSON.parse(responseText);
 
     return NextResponse.json({ recommendations: result.recommendations || [] });
